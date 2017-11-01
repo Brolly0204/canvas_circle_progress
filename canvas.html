@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20em auto;
+        }
+
+        .circle canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: white;
+        }
+
+        #canvas_1 {
+            z-index: 1;
+        }
+
+        #canvas_2 {
+            z-index: 2;
+            background: transparent;
+            /*transform: rotate(-90deg);*/
+        }
+        .text {
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+<!--<canvas id="myCanvas" height="300"></canvas>-->
+<div class="circle">
+    <canvas id="canvas_1" width="200" height="200"></canvas>
+    <canvas id="canvas_2" width="200" height="200"></canvas>
+</div>
+<canvas id="canvas_3" width="200" height="200"></canvas>
+<script type="text/javascript">
+    //    let c = document.getElementById('myCanvas');
+    //    let ctx = c.getContext('2d');
+    //    ctx.beginPath();
+    //    ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+    //    ctx.stroke();
+    //    ctx.beginPath(); // beginPath的使用是开始一个路径，也就是为了切断和上一个图形的路径联系。
+    //    ctx.arc(200, 150, 50, 0, 2 * Math.PI);
+    //    ctx.stroke(); // stroke是绘制一个路径
+    let c1 = document.querySelector('#canvas_1');
+    let c2 = document.querySelector('#canvas_2');
+    // 绘制灰色底部圆环
+    let ctx1 = c1.getContext('2d');
+    let ctx2 = c2.getContext('2d');
+    ctx1.lineWidth = 10;
+    ctx1.strokeStyle = '#ccc';
+    ctx1.beginPath();
+    ctx1.arc(c1.width / 2, c1.height / 2, c1.width / 2 - ctx1.lineWidth, 0, 2 * Math.PI, false);
+    ctx1.closePath();
+    ctx1.stroke();
+
+    ctx2.lineWidth = 10;
+    ctx2.strokeStyle = '#f90';
+    let percent = 100; // 百分数
+    //    let angle = 360/100*percent/180; // 计算百分之percent时的弧度 360/100 360度分成 100份 百分之60也就是占60份 360/100*percent 再除以 π=180 得到相应弧度
+    let angle = 0.02 * percent; // 弧度
+    let finalyAngle = angle - 0.5; // 最终弧度（因为默认是从弧度0π/2π（3点钟）位置，开始绘制的，我们想要的是从弧度1.5π（12点钟）位置开始绘制 ）所以要减去0.5弧度
+    let timer;
+    // 百分比圆环
+    ctx2.beginPath();
+    ctx2.arc(c2.width / 2, c2.height / 2, c2.width / 2 - ctx2.lineWidth,  -90 * Math.PI / 180, (percent * 3.6 - 90) * Math.PI / 180, false);
+    ctx2.stroke();
+    ctx2.font = '30px Arial';
+    ctx2.fillStyle = 'red';
+    let text = percent + '%';
+    ctx2.textAlign='center'; // 文字中心被放置指定水平位置 值：start end center left right
+    ctx2.textBaseline = "middle"; // 文字纵向位置 top middle bottom
+    ctx2.fillText(text, c2.width / 2, c2.height / 2);
+    ctx2.closePath();
+</script>
+</body>
+</html>

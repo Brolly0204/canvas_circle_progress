@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20em auto;
+        }
+
+        .circle canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: white;
+        }
+
+        /* 将两个圆环定位到一起 */
+        #canvas_1 {
+            z-index: 1;
+        }
+
+        #canvas_2 {
+            z-index: 2;
+            background: transparent;
+        }
+
+    </style>
+</head>
+<body>
+<div class="circle">
+    <canvas id="canvas_1" width="200" height="200"></canvas>
+    <canvas id="canvas_2" width="200" height="200"></canvas>
+</div>
+<script type="text/css" src="reqAnimationFrame.js"></script>
+<script type="text/javascript">
+    /**
+     * degrees = radians * 180/Math.PI
+     * 角度等于弧度乘于180再除于PI
+     *
+     * radians = degrees * Math.PI/180
+     * 弧度等于角度度乘于PI再除于180
+     *
+     */
+
+    /**
+     * 利用context方法，进行圆和弧的绘制
+     * context.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+     * x 圆的中心的 x 坐标。
+     * y 圆的中心的 y 坐标。
+     * r 圆的半径
+     * startingAngle 起始角，以弧度计。（弧的圆形的三点钟位置是 0 度）。
+     * endAngle 结束角，以弧度计。
+     * anticlockwise 可选。规定应该逆时针还是顺时针绘图。False = 顺时针，true =           逆时针。
+     *
+     */
+
+
+   function Circle_Progress(options) {
+       let {percent, outerRace, innerRace} = options;
+       if (!outerRace || !innerRace) {
+           throw new Error('outerRace or innerRace is not undefined ');
+       }
+       if (percent < 0 || percent > 100) {
+           throw new Error('percent must be between 0 and 100');
+       }
+       let c1 = document.querySelector(outerRace); // 底部轨道圆环
+       let c2 = document.querySelector(innerRace); // 进度圆环
+
+       let ctx1 = c1.getContext('2d');
+       let ctx2 = c2.getContext('2d');
+       // 绘制灰色底部圆环
+       ctx1.lineWidth = 10;
+       ctx1.strokeStyle = '#ccc';
+       ctx1.beginPath();
+       ctx1.arc(c1.width / 2, c1.height / 2, c1.width / 2 - ctx1.lineWidth, 0, 2 * Math.PI, false); // 绘制底部圆环
+       ctx1.closePath();
+       ctx1.stroke();
+
+       ctx2.lineWidth = 10;
+       ctx2.strokeStyle = '#f90';
+       let timer = null;
+       let angle = 0;
+       let percentRadian = 0.02 * percent; // 最终弧度
+       let percentAge = 0; // 实施记录百分比
+       let startAngle = -90 * Math.PI / 180; // 起始位置为0点钟方向（1.5π）
+       (function draw() {
+           timer = requestAnimationFrame(draw);
+           ctx2.clearRect(0, 0, c2.width, c2.height);
+           // 百分比圆环
+           ctx2.beginPath();
+           ctx2.arc(c2.width / 2, c2.height / 2, c2.width / 2 - ctx2.lineWidth, startAngle, (percentAge * 3.6 - 90) * Math.PI / 180, false);
+           angle++;
+           percentAge = parseInt(angle / 360 * 100); // 根据角度计算出此时的百分比
+           if (angle / 180 > percentRadian) {
+               window.cancelAnimationFrame(timer);
+           }
+           ctx2.stroke();
+           ctx2.closePath();
+           ctx2.save();
+           ctx2.beginPath();
+           ctx2.font = '30px Arial';
+           ctx2.fillStyle = 'red';
+           ctx2.textAlign = 'center';
+           ctx2.textBaseline = "middle";
+           let text = percentAge + '%';
+           ctx2.fillText(text, c2.width / 2, c2.height / 2);
+           ctx2.closePath();
+           ctx2.restore();
+       })();
+   }
+   window.onload = function () {
+      new Circle_Progress({
+          percent: 60,
+          outerRace: '#canvas_1',
+          innerRace: '#canvas_2',
+      });
+   }
+</script>
+</body>
+</html>
